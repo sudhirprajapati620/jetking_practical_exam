@@ -1,0 +1,84 @@
+
+
+Q1.) Write an NFT Market Place Smart Contract which
+allows users to buy the NFT and list their already-minted
+NFT also the owner of the marketplace has to get a
+commission whenever an NFT is sold.
+//SPDX-License-Identifier : MIT
+pragma solidity ^0.8.17;
+
+
+
+ans .
+
+NFT Market place smart contract which allow users the nft and list which are already minted and also the 
+owner of the market place will get commision whenever nft is sold.
+
+in the smart contract withdrow function is for safety purpose, if any ether got struc in the contract owner can withdraw it.
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract NFTmarketplace is Ownable {
+    address payable public admin;
+
+    struct listening {
+        address nftaddress;
+        uint tokenID;
+        uint price;
+        address seller;
+        bool sold;
+    }
+
+    uint256 public selectcommissionpercentage;
+
+    mapping (uint => uint) tokenIdToListeningId;
+    listening[] listenings;
+
+    constructor () {
+        admin = payable (msg.sender);
+        selectcommissionpercentage = 10;
+
+     }
+
+     function listNFT (address _nftaddress, uint _tokenId, uint _price) external  {
+         require(_price > 0,"invalid value");
+         require(msg.sender != address(0), "zero address");
+         require(IERC721 (_nftAddress).ownerof (_tokenId) == msg.sender, "only the Owner Of the nft can list it ");
+
+        IERC721(_nftaddress).transferfrom(msg.sender) . address(this ). _tokenId;
+        listing.push(listing(_nftaddress, _tokenId, _price, msg.sender, false));
+
+     }
+
+     function buynft(uint _listingId) external  payable {
+         require(_listing < listings.length, "invalid listingId") ;
+
+         listing storage listing = listings[_listingId];
+
+         require(listing.seller != msg.sender, "seller cannot buy his own  nft");
+         require(msg.value == listing.price, "Insufficient funds ");
+         require(listing.sold, "Already been sold out");
+         require(msg.sender != address(0),"zero address");
+
+         listing.sold = true;
+         uint256 commission = (listing.price * selectcommissionpercentage) /100;
+         admin.transfer (commission);
+
+         payable (listing.seller).transfer(listing.price - commission);
+
+         IERC721(listing.nftAddress.transferfrom(address(this), msg.sender, liating.tokenId));
+     }
+
+     function getlisting (uint _listingId) external  view returns (listing memory) {
+         return  listings [_listingId];
+     }
+
+     function withraw() external  onlyOwner {
+         uint bal = address(this).balance;
+         admin.transfer(bal);
+     }
+ 
+
+}
